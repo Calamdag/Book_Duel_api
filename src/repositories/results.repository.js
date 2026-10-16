@@ -8,7 +8,7 @@ async function findFinishedGamePlayers(since) {
     SELECT s.join_code AS session_code,
            s.started_at,
            s.ended_at,
-           p.school_id,
+           u.school_id,
            p.nickname,
            p.score,
            (
@@ -25,6 +25,7 @@ async function findFinishedGamePlayers(since) {
            ) AS completed
       FROM sessions s
       JOIN session_players p ON p.session_id = s.session_id
+      JOIN users u ON u.user_id = p.user_id
      WHERE s.status = 'closed'
        AND (CAST(:since AS timestamptz) IS NULL
             OR s.ended_at > CAST(:since AS timestamptz))

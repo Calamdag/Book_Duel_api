@@ -59,7 +59,7 @@ module.exports = {
     await queryInterface.bulkInsert('sessions', [{
       host_id: host.host_id,
       question_set_id: set.question_set_id,
-      join_code: 'D3M042',
+      join_code: '482913',
       status: 'closed',
       end_reason: 'completed',
       created_at: new Date('2026-10-16T02:00:00Z'),
@@ -67,16 +67,20 @@ module.exports = {
       ended_at: new Date('2026-10-16T02:08:00Z'),
     }]);
     const [[session]] = await db.query(
-      "SELECT session_id FROM sessions WHERE join_code = 'D3M042'"
+      "SELECT session_id FROM sessions WHERE join_code = '482913'"
     );
     const sid = session.session_id;
 
-    // 6. Players: 3 completed (two tie at 30), 1 left early. Fictitious school IDs.
+    // 6. Players: 3 completed (two tie at 30), 1 left early. Each is linked to a user.
+    const [userRows] = await db.query('SELECT user_id, school_id FROM users');
+    const u = {};
+    userRows.forEach((x) => { u[x.school_id] = x.user_id; });
+
     await queryInterface.bulkInsert('session_players', [
-      { session_id: sid, nickname: 'PixelPilot',   school_id: '2099-0001', hp: 5, score: 30, is_eliminated: false, is_winner: true,  joined_at: new Date('2026-10-16T02:00:30Z') },
-      { session_id: sid, nickname: 'CodeComet',    school_id: '2099-0002', hp: 5, score: 30, is_eliminated: false, is_winner: true,  joined_at: new Date('2026-10-16T02:00:35Z') },
-      { session_id: sid, nickname: 'BugHunter',    school_id: '2099-0003', hp: 3, score: 10, is_eliminated: false, is_winner: false, joined_at: new Date('2026-10-16T02:00:40Z') },
-      { session_id: sid, nickname: 'EarlyQuitter', school_id: '2099-0004', hp: 0, score: 0,  is_eliminated: true,  is_winner: false, joined_at: new Date('2026-10-16T02:00:45Z') },
+      { session_id: sid, user_id: u['2099-0001'], nickname: 'PixelPilot',   hp: 5, score: 30, is_eliminated: false, is_winner: true,  joined_at: new Date('2026-10-16T02:00:30Z') },
+      { session_id: sid, user_id: u['2099-0002'], nickname: 'CodeComet',    hp: 5, score: 30, is_eliminated: false, is_winner: true,  joined_at: new Date('2026-10-16T02:00:35Z') },
+      { session_id: sid, user_id: u['2099-0003'], nickname: 'BugHunter',    hp: 3, score: 10, is_eliminated: false, is_winner: false, joined_at: new Date('2026-10-16T02:00:40Z') },
+      { session_id: sid, user_id: u['2099-0004'], nickname: 'EarlyQuitter', hp: 0, score: 0,  is_eliminated: true,  is_winner: false, joined_at: new Date('2026-10-16T02:00:45Z') },
     ]);
     const [playerRows] = await db.query(
       `SELECT session_player_id, nickname FROM session_players WHERE session_id = ${sid}`
@@ -125,13 +129,13 @@ module.exports = {
 
   async down(queryInterface) {
     const db = queryInterface.sequelize;
-    const sessionIds = "SELECT session_id FROM sessions WHERE join_code = 'D3M042'";
+    const sessionIds = "SELECT session_id FROM sessions WHERE join_code = '482913'";
     const setIds = "SELECT question_set_id FROM question_sets WHERE title = 'Demo Web Development Duel'";
 
     await db.query(`DELETE FROM answers WHERE round_id IN (SELECT round_id FROM rounds WHERE session_id IN (${sessionIds}))`);
     await db.query(`DELETE FROM rounds WHERE session_id IN (${sessionIds})`);
     await db.query(`DELETE FROM session_players WHERE session_id IN (${sessionIds})`);
-    await db.query("DELETE FROM sessions WHERE join_code = 'D3M042'");
+    await db.query("DELETE FROM sessions WHERE join_code = '482913'");
     await db.query(`DELETE FROM choices WHERE question_id IN (SELECT question_id FROM questions WHERE question_set_id IN (${setIds}))`);
     await db.query(`DELETE FROM questions WHERE question_set_id IN (${setIds})`);
     await db.query("DELETE FROM question_sets WHERE title = 'Demo Web Development Duel'");
