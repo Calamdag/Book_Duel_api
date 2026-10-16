@@ -71,12 +71,12 @@ module.exports = {
     );
     const sid = session.session_id;
 
-    // 6. Players: 3 completed (two tie at 30), 1 left early
+    // 6. Players: 3 completed (two tie at 30), 1 left early. Fictitious school IDs.
     await queryInterface.bulkInsert('session_players', [
-      { session_id: sid, nickname: 'PixelPilot',   hp: 5, score: 30, is_eliminated: false, is_winner: true,  joined_at: new Date('2026-10-16T02:00:30Z') },
-      { session_id: sid, nickname: 'CodeComet',    hp: 5, score: 30, is_eliminated: false, is_winner: true,  joined_at: new Date('2026-10-16T02:00:35Z') },
-      { session_id: sid, nickname: 'BugHunter',    hp: 3, score: 10, is_eliminated: false, is_winner: false, joined_at: new Date('2026-10-16T02:00:40Z') },
-      { session_id: sid, nickname: 'EarlyQuitter', hp: 0, score: 0,  is_eliminated: true,  is_winner: false, joined_at: new Date('2026-10-16T02:00:45Z') },
+      { session_id: sid, nickname: 'PixelPilot',   school_id: '2099-0001', hp: 5, score: 30, is_eliminated: false, is_winner: true,  joined_at: new Date('2026-10-16T02:00:30Z') },
+      { session_id: sid, nickname: 'CodeComet',    school_id: '2099-0002', hp: 5, score: 30, is_eliminated: false, is_winner: true,  joined_at: new Date('2026-10-16T02:00:35Z') },
+      { session_id: sid, nickname: 'BugHunter',    school_id: '2099-0003', hp: 3, score: 10, is_eliminated: false, is_winner: false, joined_at: new Date('2026-10-16T02:00:40Z') },
+      { session_id: sid, nickname: 'EarlyQuitter', school_id: '2099-0004', hp: 0, score: 0,  is_eliminated: true,  is_winner: false, joined_at: new Date('2026-10-16T02:00:45Z') },
     ]);
     const [playerRows] = await db.query(
       `SELECT session_player_id, nickname FROM session_players WHERE session_id = ${sid}`

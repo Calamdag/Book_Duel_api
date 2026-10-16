@@ -60,11 +60,18 @@ Base URL: `http://localhost:3001/api/v1`
 
 ## What "completed" means in my game
 
-[One or two sentences: when does a player count as having completed a game? For example: "A player completed the game when they answered every question, even if some answers were wrong or timed out."]
+["A game of Book Duel is completed when only one player remains alive after all other players lose their HP, making that player the winner. If the questions run out while several players are still alive, the host ends the game and the player with the highest remaining HP wins. The host may also end the session manually if necessary. A player is eliminated when their HP reaches zero and can no longer answer questions or win the current game."]
 
 ## Tables
 
-[List your tables, one line each, in the order of your migrations.]
+[hosts: accounts that create and run games
+question_sets: a quiz created by a host
+questions: the questions inside a set
+choices: the answer options for each question
+sessions: one played game, with its join code and status
+session_players: one seat per player in a session, with nickname, school ID and score
+rounds: one question being played in a session
+answers: a player’s answer to a round.]
 
 ## Database scripts
 
