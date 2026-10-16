@@ -5,25 +5,21 @@ module.exports = {
     await queryInterface.bulkInsert('hosts', [
       {
         username: 'demo_host_alpha',
-        password_hash:
-          '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+        password_hash: '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
         created_at: new Date('2026-10-16T00:00:00Z'),
       },
       {
+        // Awkward case: an account that never hosted a game
         username: 'demo_host_beta',
-        password_hash:
-          '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+        password_hash: '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
         created_at: new Date('2026-10-16T00:01:00Z'),
       },
     ]);
   },
 
-async down(queryInterface) {
+  async down(queryInterface) {
     await queryInterface.bulkDelete('hosts', {
-      username: [
-        'demo_host_alpha',
-        'demo_host_beta',
-      ],
+      username: ['demo_host_alpha', 'demo_host_beta'],
     });
   },
 };
