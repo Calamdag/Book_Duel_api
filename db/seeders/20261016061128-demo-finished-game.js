@@ -5,10 +5,10 @@ module.exports = {
     const db = queryInterface.sequelize;
 
     // 1. Find the host created by the first seeder
-    const [[host]] = await db.query(
-      "SELECT host_id FROM hosts WHERE username = 'demo_host_alpha'"
+        const [[host]] = await db.query(
+      "SELECT user_id AS host_id FROM users WHERE school_id = '2099-0101'"
     );
-    if (!host) throw new Error('demo_host_alpha not found. Run the demo-hosts seeder first.');
+    if (!host) throw new Error('Host 2099-0101 not found. Run the demo-users seeder first.');
 
     // 2. Question set
     await queryInterface.bulkInsert('question_sets', [{
