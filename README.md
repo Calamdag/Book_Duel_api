@@ -20,8 +20,8 @@ This is my own build of my group's game concept. Every commit in this repository
 ## Setup
 
 ```
-git clone [repository-url]
-cd [folder-name]
+git clone [https://github.com/Calamdag/Book_Duel_api.git]
+cd [Book_Duel_api]
 npm install
 ```
 
