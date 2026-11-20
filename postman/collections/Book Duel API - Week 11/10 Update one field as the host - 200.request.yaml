@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/question-sets/{{setId}}"
+method: PATCH
+headers:
+  X-Demo-User: "{{host}}"
+body:
+  type: json
+  content: '{ "subject": "Updated by the owner" }'
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"status is 200\", function () {\r
+
+      \  pm.response.to.have.status(200);\r
+
+      });\r
+
+      pm.test(\"subject was changed\", function () {\r
+
+      \  pm.expect(pm.response.json().subject).to.eql(\"Updated by the owner\");\r
+
+      });"
+    language: text/javascript
+order: 10000

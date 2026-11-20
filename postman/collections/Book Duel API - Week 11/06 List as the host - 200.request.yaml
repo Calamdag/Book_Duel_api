@@ -1,0 +1,20 @@
+$kind: http-request
+url: "\t{{baseUrl}}/question-sets"
+method: GET
+headers:
+  X-Demo-User: "{{host}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"status is 200\", function () {\r
+
+      \  pm.response.to.have.status(200);\r
+
+      });\r
+
+      pm.test(\"body is a list\", function () {\r
+
+      \  pm.expect(pm.response.json()).to.be.an(\"array\");\r
+
+      });\r\n"
+    language: text/javascript
+order: 6000

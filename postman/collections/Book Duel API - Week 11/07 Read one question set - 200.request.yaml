@@ -1,0 +1,24 @@
+$kind: http-request
+url: "{{baseUrl}}/question-sets/{{setId}}"
+method: GET
+headers:
+  X-Demo-User: "{{host}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"status is 200\", function () {\r
+
+      \  pm.response.to.have.status(200);\r
+
+      });\r
+
+      pm.test(\"has an id and a title\", function () {\r
+
+      \  const body = pm.response.json();\r
+
+      \  pm.expect(body).to.have.property(\"id\");\r
+
+      \  pm.expect(body).to.have.property(\"title\");\r
+
+      });"
+    language: text/javascript
+order: 7000
