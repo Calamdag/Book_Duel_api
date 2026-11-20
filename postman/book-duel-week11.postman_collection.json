@@ -1,0 +1,596 @@
+{
+  "info": {
+    "_postman_id": "8914cf9f-39ad-45ba-b38a-d24ef357de32",
+    "name": "Book Duel API - Week 11",
+    "description": "Module 1 (question sets) test cases. Callers are chosen with the X-Demo-User header until login exists in Week 12.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "60132007",
+    "_collection_link": "https://go.postman.co/collection/60132007-8914cf9f-39ad-45ba-b38a-d24ef357de32?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01 Create a question set (valid) - 201",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 201\", function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "pm.collectionVariables.set(\"setId\", pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{host}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"title\": \"Week 11 Test Set\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/question-sets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 Create with a bad title and wrong type - 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 400\", function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "pm.test(\"code is VALIDATION_FAILED\", function () {",
+              "  pm.expect(pm.response.json().error.code).to.eql(\"VALIDATION_FAILED\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{host}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"title\": \"ab\", \"subject\": 123 }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/question-sets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 Create with broken JSON - 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 400\", function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "pm.test(\"code is INVALID_JSON\", function () {",
+              "  pm.expect(pm.response.json().error.code).to.eql(\"INVALID_JSON\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{host}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"title\": \"Philippine Literature\"",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/question-sets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04 List without a user - 401",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 401\", function () {",
+              "  pm.response.to.have.status(401);",
+              "});",
+              "pm.test(\"code is AUTH_REQUIRED\", function () {",
+              "  pm.expect(pm.response.json().error.code).to.eql(\"AUTH_REQUIRED\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/question-sets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 List as a player - 403",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 403\", function () {",
+              "  pm.response.to.have.status(403);",
+              "});",
+              "pm.test(\"code is FORBIDDEN\", function () {",
+              "  pm.expect(pm.response.json().error.code).to.eql(\"FORBIDDEN\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{player}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/question-sets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "06 List as the host - 200",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 200\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"body is a list\", function () {",
+              "  pm.expect(pm.response.json()).to.be.an(\"array\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{host}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/question-sets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "07 Read one question set - 200",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 200\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"has an id and a title\", function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property(\"id\");",
+              "  pm.expect(body).to.have.property(\"title\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{host}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/question-sets/{{setId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets",
+            "{{setId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "08 Read a set that does not exist - 404",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 404\", function () {",
+              "  pm.response.to.have.status(404);",
+              "});",
+              "pm.test(\"code is QUESTION_SET_NOT_FOUND\", function () {",
+              "  pm.expect(pm.response.json().error.code).to.eql(\"QUESTION_SET_NOT_FOUND\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{host}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/question-sets/999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets",
+            "999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "09 Read with an id that is not a number - 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 400\", function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "pm.test(\"code is VALIDATION_FAILED\", function () {",
+              "  pm.expect(pm.response.json().error.code).to.eql(\"VALIDATION_FAILED\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{host}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/question-sets/abc",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets",
+            "abc"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "10 Update one field as the host - 200",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 200\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"subject was changed\", function () {",
+              "  pm.expect(pm.response.json().subject).to.eql(\"Updated by the owner\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{host}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"subject\": \"Updated by the owner\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/question-sets/{{setId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets",
+            "{{setId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "11 Update a set that belongs to another host - 403",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 403\", function () {",
+              "  pm.response.to.have.status(403);",
+              "});",
+              "pm.test(\"code is FORBIDDEN\", function () {",
+              "  pm.expect(pm.response.json().error.code).to.eql(\"FORBIDDEN\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{otherHost}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"subject\": \"I should not be able to do this\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/question-sets/{{setId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets",
+            "{{setId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "12 Update with an empty body - 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 400\", function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "pm.test(\"code is VALIDATION_FAILED\", function () {",
+              "  pm.expect(pm.response.json().error.code).to.eql(\"VALIDATION_FAILED\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{host}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/question-sets/{{setId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets",
+            "{{setId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "13 Delete a question set as the host - 204",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 204\", function () {",
+              "  pm.response.to.have.status(204);",
+              "});",
+              "pm.test(\"there is no body\", function () {",
+              "  pm.expect(pm.response.text()).to.eql(\"\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "X-Demo-User",
+            "value": "{{host}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/question-sets/{{setId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "question-sets",
+            "{{setId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001/api/v1"
+    },
+    {
+      "key": "host",
+      "value": "2099-0101"
+    },
+    {
+      "key": "otherHost",
+      "value": "2099-0102"
+    },
+    {
+      "key": "player",
+      "value": "2099-0001"
+    },
+    {
+      "key": "setId",
+      "value": ""
+    }
+  ]
+}
