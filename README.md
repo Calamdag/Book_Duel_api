@@ -4,7 +4,7 @@ Backend API for Book-Duel, a tournament game for the SorSU Bulan Campus library.
 CS 313 Software Engineering 1, A.Y. 2026-2027.
 
 - Developer: Dave Mikael Calamdag Calamdag, BSCS 3-1
-- Group and game concept: Team 1
+- Group and game concept: Team 11
 
 This is my own build of my group's game concept. Every commit in this repository was made by me, with Git, on my own computer or in my own Codespace.
 
@@ -20,8 +20,8 @@ This is my own build of my group's game concept. Every commit in this repository
 ## Setup
 
 ```
-git clone [https://github.com/Calamdag/Book_Duel_api.git]
-cd [Book_Duel_api]
+git clone https://github.com/Calamdag/Book_Duel_api.git
+cd Book_Duel_api
 npm install
 ```
 
@@ -57,22 +57,33 @@ Base URL: `http://localhost:3001/api/v1`
 | GET | /health | Is the API up and can it reach the database? | 200 (503 when the database is down) |
 | GET | /game-info | Slug, name, group, developer, description, player limits, version | 200 |
 | GET | /results | Finished games, every player, and the top 3. Needs the `X-Hub-Key` header. Optional `?since=` | 200 (401 without the key) |
+| POST | /question-sets | Create a question set (HOST or ADMIN) | 201 (400 invalid body) |
+| GET | /question-sets | List the host's own sets (an admin sees all) | 200 |
+| GET | /question-sets/{id} | Read one set (owner or admin) | 200 (404 not found, 403 not yours) |
+| PATCH | /question-sets/{id} | Change title, description, subject or grade_level (owner or admin) | 200 (400 empty or invalid body) |
+| DELETE | /question-sets/{id} | Delete a set (owner or admin) | 204 |
+
+Until login is built in Week 12, `/question-sets` reads the caller from the `X-Demo-User` header (a school ID such as `2099-0101`). This is not security.
+
+The Postman collection for these endpoints is in `postman/book-duel-week11.postman_collection.json` (Collection v2.1).
 
 ## What "completed" means in my game
 
-["A player has completed the game when they submitted an answer for every non-voided round of the session. A player who was eliminated or left before answering every round has completed = false."]
+A player has completed the game when they submitted an answer for every non-voided round of the session. A player who was eliminated or left before answering every round has completed = false.
 
 ## Tables
 
-[hosts: accounts that create and run games
-users: accounts identified by school ID, with full name, email and role
-question_sets: a quiz created by a host
-questions: the questions inside a set
-choices: the answer options for each question
-sessions: one played game, with its join code and status
-session_players: one seat per user per session, with nickname and score
-rounds: one question being played in a session
-answers: a player's answer to a round.]
+- `hosts`: the original host accounts table. It is kept but no longer referenced (see the design change below).
+- `users`: accounts identified by school ID, with full name, email and role (HOST, ADMIN or PLAYER).
+- `question_sets`: a quiz created by a host.
+- `questions`: the questions inside a set.
+- `choices`: the answer options for each question.
+- `sessions`: one played game, with its join code and status.
+- `session_players`: one seat per user per session, with nickname and score.
+- `rounds`: one question being played in a session.
+- `answers`: a player's answer to a round.
+
+Design change: `question_sets.host_id` and `sessions.host_id` reference `users.user_id` (role HOST) instead of `hosts`, because the Week 11 kit identifies callers from `users`.
 
 ## Database scripts
 
