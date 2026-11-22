@@ -1,5 +1,8 @@
 // Last stop for any error thrown in a route. Four arguments = error handler.
 // The client gets clean JSON; the stack trace stays in the server log.
+const { constraintOf } = require('../errors/db-errors');
+const constraintMap = require('../errors/constraint-map');
+
 function errorHandler(err, req, res, next) {
   console.error(err);
 
@@ -7,6 +10,19 @@ function errorHandler(err, req, res, next) {
   if (err.type === 'entity.parse.failed') {
     return res.status(400).json({
       error: { code: 'INVALID_JSON', message: 'The request body is not valid JSON.' },
+    });
+  }
+
+  // A database rule was broken. The map says what to tell the client.
+  // A constraint that is not in the map still answers 409, never 500 and never SQL.
+  const constraint = constraintOf(err);
+  if (constraint) {
+    const known = constraintMap[constraint];
+    return res.status(known ? known.status : 409).json({
+      error: {
+        code: known ? known.code : 'CONFLICT',
+        message: known ? known.message : 'That change conflicts with existing data.',
+      },
     });
   }
 
