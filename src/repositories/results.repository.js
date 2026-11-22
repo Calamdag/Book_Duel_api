@@ -26,7 +26,7 @@ async function findFinishedGamePlayers(since) {
       FROM sessions s
       JOIN session_players p ON p.session_id = s.session_id
       JOIN users u ON u.user_id = p.user_id
-     WHERE s.status = 'closed'
+     WHERE s.status = 'ended'
        AND (CAST(:since AS timestamptz) IS NULL
             OR s.ended_at > CAST(:since AS timestamptz))
      ORDER BY s.ended_at DESC, p.score DESC
