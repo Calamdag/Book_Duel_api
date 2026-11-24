@@ -1,11 +1,9 @@
 // Last stop for any error thrown in a route. Four arguments = error handler.
-// The client gets clean JSON; the stack trace stays in the server log.
+// The client gets clean JSON. A stack trace is logged only for real faults.
 const { constraintOf } = require('../errors/db-errors');
 const constraintMap = require('../errors/constraint-map');
 
 function errorHandler(err, req, res, next) {
-  console.error(err);
-
   // A body that is not valid JSON: express.json() throws this before any route runs.
   if (err.type === 'entity.parse.failed') {
     return res.status(400).json({
@@ -18,6 +16,7 @@ function errorHandler(err, req, res, next) {
   const constraint = constraintOf(err);
   if (constraint) {
     const known = constraintMap[constraint];
+    if (!known) console.error(err); // a rule we forgot to put in the map
     return res.status(known ? known.status : 409).json({
       error: {
         code: known ? known.code : 'CONFLICT',
@@ -28,6 +27,7 @@ function errorHandler(err, req, res, next) {
 
   const status = err.status || 500;
   const isServerFault = status >= 500;
+  if (isServerFault) console.error(err); // stack traces only for real faults
 
   const body = {
     error: {
