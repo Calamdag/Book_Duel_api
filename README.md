@@ -52,18 +52,25 @@ npm run dev
 
 Base URL: `http://localhost:3001/api/v1`
 
-| Method | Path | Purpose | Success |
-|---|---|---|---|
-| GET | /health | Is the API up and can it reach the database? | 200 (503 when the database is down) |
-| GET | /game-info | Slug, name, group, developer, description, player limits, version | 200 |
-| GET | /results | Finished games, every player, and the top 3. Needs the `X-Hub-Key` header. Optional `?since=` | 200 (401 without the key) |
-| POST | /question-sets | Create a question set (HOST or ADMIN) | 201 (400 invalid body) |
-| GET | /question-sets | List the host's own sets (an admin sees all) | 200 |
-| GET | /question-sets/{id} | Read one set (owner or admin) | 200 (404 not found, 403 not yours) |
-| PATCH | /question-sets/{id} | Change title, description, subject or grade_level (owner or admin) | 200 (400 empty or invalid body) |
-| DELETE | /question-sets/{id} | Delete a set (owner or admin) | 204 |
+| Method | Path | Who may call | Purpose | Success |
+|---|---|---|---|---|
+| GET | /health | Anyone | Is the API up and can it reach the database? | 200 (503 when the database is down) |
+| GET | /game-info | Anyone | Slug, name, group, developer, description, player limits, version | 200 |
+| GET | /results | The Hub, with the `X-Hub-Key` header | Finished games, every player, and the top 3. Optional `?since=` | 200 (401 without the key) |
+| POST | /question-sets | HOST or ADMIN | Create a question set | 201 (400 invalid body) |
+| GET | /question-sets | HOST or ADMIN | List the host's own sets (an admin sees all) | 200 |
+| GET | /question-sets/{id} | The owner or ADMIN | Read one set | 200 (404 not found, 403 not yours) |
+| PATCH | /question-sets/{id} | The owner or ADMIN | Change title, description, subject or grade_level | 200 (400 empty or invalid body) |
+| DELETE | /question-sets/{id} | The owner or ADMIN | Delete a set | 204 (409 if a game used it) |
+| POST | /sessions | HOST or ADMIN | Start a game from a question set. The server makes the six-digit join code | 201 (404 set not found, 403 not yours) |
+| GET | /sessions/{code} | Anyone | Read a game by its code (the host is not shown) | 200 (404 no such code, 400 bad code) |
+| PATCH | /sessions/{code} | The game's host or ADMIN | Change the status to `playing` or `ended` | 200 (409 INVALID_STATUS_CHANGE) |
+| POST | /sessions/{code}/players | Any signed-in account | Join a game, or rejoin it and get the same seat back | 201 new seat, 200 rejoin (409 started, ended, full or nickname taken) |
+| GET | /sessions/{code}/players | Anyone | Nicknames, HP and score of the players in a game | 200 |
 
-Until login is built in Week 12, `/question-sets` reads the caller from the `X-Demo-User` header (a school ID such as `2099-0101`). This is not security.
+Until login is built in Week 12, `/question-sets` and `/sessions` read the caller from the `X-Demo-User` header (a school ID such as `2099-0101`). This is not security.
+
+Game statuses: `waiting`, then `playing`, then `ended`. A game never goes backward. A game holds at most 30 players, and one account has one seat per game.
 
 The Postman collection for these endpoints is in `postman/book-duel-week11.postman_collection.json` (Collection v2.1).
 
@@ -78,7 +85,7 @@ A player has completed the game when they submitted an answer for every non-void
 - `question_sets`: a quiz created by a host.
 - `questions`: the questions inside a set.
 - `choices`: the answer options for each question.
-- `sessions`: one played game, with its join code and status.
+- `sessions`: one played game, with its join code and status (`waiting`, `playing` or `ended`).
 - `session_players`: one seat per user per session, with nickname and score.
 - `rounds`: one question being played in a session.
 - `answers`: a player's answer to a round.
