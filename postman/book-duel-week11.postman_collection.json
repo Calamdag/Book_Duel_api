@@ -1261,6 +1261,46 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "28 List the players of a game - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "pm.test(\"a list that shows nicknames but not private details\", function () {\r",
+                  "  const players = pm.response.json();\r",
+                  "  pm.expect(players).to.be.an(\"array\");\r",
+                  "  pm.expect(players[0]).to.have.property(\"nickname\");\r",
+                  "  pm.expect(players[0]).to.not.have.property(\"school_id\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessions/{{code}}/players",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessions",
+                "{{code}}",
+                "players"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     }
